@@ -55,7 +55,13 @@ module Payabli
 
         return response unless response.succeeded?
 
-        get_charge(id: response.id)
+        begin
+          get_charge(id: response.id)
+        rescue Payabli::Error::Error => e
+          # The charge succeeded but due to timing issues
+          # the charge isn't available yet. Just return the initial response
+          return response
+        end
       end
     end
   end
